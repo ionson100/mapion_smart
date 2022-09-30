@@ -9,5 +9,7 @@
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_slideshow">Settings</string>
+    <string name="s9">strings</string>
+    <string name="s1">Remote Server:</string>
 </resources>

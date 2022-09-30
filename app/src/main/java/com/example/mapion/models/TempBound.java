@@ -16,6 +16,7 @@ public class TempBound {
     public List<Double> P5=new ArrayList<>(2);
     public static TempBound getInstance(BoundingBox box){
         TempBound bound=new TempBound();
+
         bound.P1.add(box.getLonWest());
         bound.P1.add(box.getLatNorth());
 
@@ -26,7 +27,7 @@ public class TempBound {
         bound.P3.add(box.getLatSouth());
 
         bound.P4.add(box.getLonWest());
-        bound.P5.add(box.getLatSouth());
+        bound.P4.add(box.getLatSouth());
 
         bound.P5.add(box.getLonWest());
         bound.P5.add(box.getLatNorth());
