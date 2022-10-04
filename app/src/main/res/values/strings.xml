@@ -7,9 +7,10 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
+    <string name="menu_home">Geo Map</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Settings</string>
     <string name="s9">strings</string>
     <string name="s1">Remote Server:</string>
+    <string name="menu_close_route">Out Route</string>
 </resources>

@@ -5,5 +5,6 @@ public enum SettingType {
     BOOLEAN,
     RADIO,
     CHECKBOX,
-    SPINNER
+    SPINNER,
+    COLOR
 }

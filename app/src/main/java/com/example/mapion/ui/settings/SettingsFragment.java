@@ -15,6 +15,7 @@ import com.example.mapion.databinding.FragmentSlideshowBinding;
 import com.example.mapion.models.TotalSettings;
 import com.example.mapion.settings.IActionSettings;
 import com.example.mapion.settings.SettingsBuilder;
+import com.example.mapion.utils.Utils;
 
 public class SettingsFragment extends Fragment {
 
@@ -25,7 +26,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-
+        Utils.CURRENT_FRAGMENT=this;
         binding = FragmentSlideshowBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 

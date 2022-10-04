@@ -10,6 +10,9 @@
         <entry key="app/src/main/res/drawable/button_background_dark_blue_active_pizdaticus.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/button_background_dark_blue_normal_pizdaticus.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/button_dark_blue_pizdaticus.xml" value="0.1435" />
+        <entry key="app/src/main/res/drawable/ic_menu_camera.xml" value="0.1435" />
+        <entry key="app/src/main/res/drawable/ic_menu_gallery.xml" value="0.1435" />
+        <entry key="app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/item_product.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/item_product_normal.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/item_product_pess.xml" value="0.1435" />
@@ -17,8 +20,10 @@
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.2803442028985507" />
         <entry key="app/src/main/res/layout/button_close.xml" value="0.3609375" />
         <entry key="app/src/main/res/layout/button_ok.xml" value="0.3609375" />
+        <entry key="app/src/main/res/layout/button_show.xml" value="0.290625" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.3619791666666667" />
         <entry key="app/src/main/res/layout/dialog_edit_text.xml" value="0.2828125" />
+        <entry key="app/src/main/res/layout/dialog_gift_route.xml" value="0.3151041666666667" />
         <entry key="app/src/main/res/layout/dialog_head.xml" value="0.3609375" />
         <entry key="app/src/main/res/layout/dialog_info.xml" value="0.321875" />
         <entry key="app/src/main/res/layout/dialog_radio.xml" value="0.2828125" />
@@ -26,9 +31,13 @@
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2803442028985507" />
         <entry key="app/src/main/res/layout/fragment_slideshow.xml" value="0.3619791666666667" />
         <entry key="app/src/main/res/layout/item_radio.xml" value="0.2828125" />
+        <entry key="app/src/main/res/layout/left_navigation_free.xml" value="0.3609375" />
+        <entry key="app/src/main/res/layout/nav_header_main.xml" value="0.290625" />
+        <entry key="app/src/main/res/layout/nav_header_main_free.xml" value="0.28958333333333336" />
         <entry key="app/src/main/res/layout/settings_boolean.xml" value="0.2828125" />
         <entry key="app/src/main/res/layout/settings_editext.xml" value="0.2828125" />
         <entry key="app/src/main/res/layout/settings_host.xml" value="0.2828125" />
+        <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.31614583333333335" />
       </map>
     </option>
   </component>

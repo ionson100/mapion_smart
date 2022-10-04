@@ -3,15 +3,25 @@ package com.example.mapion;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.widget.Toast;
 
+import com.example.mapion.models.MCurrentRoute;
+import com.example.mapion.ui.home.HomeFragment;
+import com.example.mapion.utils.IOnBackPressed;
 import com.example.mapion.utils.Starter;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.mapion.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -29,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
+    private  DrawerLayout drawer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,23 +56,48 @@ public class MainActivity extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
-        DrawerLayout drawer = binding.drawerLayout;
+        drawer = binding.drawerLayout;
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                MenuItem menuItem=binding.navView.getMenu().findItem(R.id.nav_close_current_route);
+                if(MCurrentRoute.getAnyRoute()>0){
+                    menuItem.setVisible(true);
+                }else {
+                    menuItem.setVisible(false);
+                }
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,R.id.nav_close_current_route)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-
         requestPermissionsIfNecessary(new String[]{
                 Manifest.permission.INTERNET,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE});
 
@@ -111,5 +147,39 @@ public class MainActivity extends AppCompatActivity {
                     permissionsToRequest.toArray(new String[0]),
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
+    }
+
+    @Override public void onBackPressed() {
+        if(drawer.isDrawerOpen(Gravity.LEFT)){// закрываем основное меню
+            drawer.closeDrawer(Gravity.LEFT);
+            return;
+        }
+        if(Utils.CURRENT_FRAGMENT!=null){
+            boolean sd=Utils.CURRENT_FRAGMENT instanceof IOnBackPressed;
+            if (sd){ // если открта карта
+                boolean d=((IOnBackPressed) Utils.CURRENT_FRAGMENT).onBackPressed();
+                if(!d){ // если открыто меню маршрутов, закрываем меню маршрутов
+                   return;
+                }
+            }else {// если открыта не карта, открываем карту.
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.nav_host_fragment_content_main,Utils.HOME_FRAGMENT);
+                ft.commit();
+            }
+        }
+        super.onBackPressed();
+
+    }
+
+    public void onClearRoute(MenuItem item) {
+        MCurrentRoute.clear();
+        boolean sd=Utils.CURRENT_FRAGMENT instanceof IOnBackPressed;
+        if (sd){ // очищаем маршрут текущий
+            ((IOnBackPressed) Utils.CURRENT_FRAGMENT).clearRoute();
+
+        }
+        Toast.makeText(this, "Ok Route Out ", Toast.LENGTH_SHORT).show();
+        drawer.closeDrawer(Gravity.LEFT);
+
     }
 }

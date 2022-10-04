@@ -3,6 +3,7 @@ package com.example.mapion.dialogs;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapion.IAction;
+import com.example.mapion.models.MTempFreeRoutes;
 
 public class DialogFactory {
 
@@ -20,5 +21,11 @@ public class DialogFactory {
         dialog.title=title;
         dialog.message=message;
         dialog.show(activity.getSupportFragmentManager(),DialogInfo.TAG);
+    }
+    public static void dialogGiftRoute(AppCompatActivity activity, MTempFreeRoutes route, IAction<MTempFreeRoutes> iAction){
+        DialogGiftRoute dialog=new DialogGiftRoute();
+        dialog.iAction=iAction;
+        dialog.route=route;
+        dialog.show(activity.getSupportFragmentManager(),DialogGiftRoute.TAG);
     }
 }

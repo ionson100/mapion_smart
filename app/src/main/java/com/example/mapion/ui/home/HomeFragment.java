@@ -1,30 +1,39 @@
 package com.example.mapion.ui.home;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.mapion.BuildConfig;
 import com.example.mapion.R;
 import com.example.mapion.databinding.FragmentHomeBinding;
+import com.example.mapion.databinding.LeftNavigationFreeBinding;
 import com.example.mapion.models.MStorageMapView;
+import com.example.mapion.seder.SenderRouteFactory;
+import com.example.mapion.utils.IOnBackPressed;
+import com.example.mapion.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements IOnBackPressed {
 
     GPSTracker mGpsTracker;
     private MapView mMap = null;
@@ -32,15 +41,24 @@ public class HomeFragment extends Fragment {
     //private Marker startMarker;
     private FragmentHomeBinding binding;
     private MStorageMapView storageMapView=MStorageMapView.getInstance();
+    DrawerLayout drawerLayout;
+    WorkerFreeRoute workerFreeRoute;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
 
+        Utils.CURRENT_FRAGMENT=this;
+        Utils.HOME_FRAGMENT=this;
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        mMap = (MapView) root.findViewById(R.id.map);
+        mMap = binding.map;
+        drawerLayout=binding.myHomeDraver;
+
+
+        //navigationViewFree=binding.;
 
         //startMarker = new Marker(map);
 
@@ -85,9 +103,6 @@ public class HomeFragment extends Fragment {
                         mGpsTracker.onLocationChangedCore(location -> {
                             mMapController.setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
                         });
-
-
-
                         Snackbar.make(view, "Open Location", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     }
@@ -97,19 +112,17 @@ public class HomeFragment extends Fragment {
                             .setAction("Action", null).show();
                 }
 
-
-
-//                BoundingBox boundingBox = map.getProjection().getBoundingBox();
-//                new SenderRouteFactory().getFreeRoute(boundingBox,(s) -> {
-//                    Snackbar.make(view, s, Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
-//                });
-
-
             }
+        });
+        FloatingActionButton fabFree = root.findViewById(R.id.fabFree);
+        fabFree.setOnClickListener(v -> {
+
+            workerFreeRoute.OpenClose();
+
         });
 
 
+        workerFreeRoute=new WorkerFreeRoute(mMap,drawerLayout,getActivity());
         return root;
     }
     @Override
@@ -141,5 +154,19 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if(drawerLayout.isDrawerOpen(Gravity.RIGHT)){
+            drawerLayout.closeDrawer(Gravity.RIGHT);
+            return false;
+        }
+        return true; // можно закрывать
+    }
+
+    @Override
+    public void clearRoute() {
+        mMap.getOverlays().clear();
     }
 }

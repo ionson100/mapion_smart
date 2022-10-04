@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.mapion.databinding.FragmentGalleryBinding;
+import com.example.mapion.utils.Utils;
 
 public class GalleryFragment extends Fragment {
 
@@ -18,6 +19,7 @@ public class GalleryFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        Utils.CURRENT_FRAGMENT=this;
         GalleryViewModel galleryViewModel =
                 new ViewModelProvider(this).get(GalleryViewModel.class);
 
