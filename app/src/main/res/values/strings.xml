@@ -13,4 +13,10 @@
     <string name="s9">strings</string>
     <string name="s1">Remote Server:</string>
     <string name="menu_close_route">Out Route</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Start</string>
+    <string name="stop">Stop</string>
+    <string name="backward">Backward</string>
+    <string name="forward">Forward</string>
+    <string name="info">Info</string>
 </resources>

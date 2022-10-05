@@ -28,4 +28,13 @@ public class DialogFactory {
         dialog.route=route;
         dialog.show(activity.getSupportFragmentManager(),DialogGiftRoute.TAG);
     }
+    public static DialogMediaPlayer dialogMediaPlayer(AppCompatActivity activity,String message,String pathFile,IAction<Object>  iAction){
+        DialogMediaPlayer dialogMediaPlayer = new DialogMediaPlayer();
+        dialogMediaPlayer.iAction=iAction;
+        dialogMediaPlayer.message=message;
+        dialogMediaPlayer.fileName=pathFile;
+        dialogMediaPlayer.mActivity=activity;
+        dialogMediaPlayer.show(activity.getSupportFragmentManager(),DialogMediaPlayer.TAG);
+        return dialogMediaPlayer;
+    }
 }

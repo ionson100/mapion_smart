@@ -147,6 +147,7 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
         storageMapView.lon= mMap.getMapCenter().getLongitude();
         storageMapView.zoom= mMap.getZoomLevelDouble();
         storageMapView.save();
+        workerFreeRoute.UnregisterReceiver();
         super.onStop();
     }
 

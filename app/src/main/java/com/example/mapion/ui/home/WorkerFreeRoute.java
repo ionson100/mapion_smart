@@ -1,7 +1,16 @@
 package com.example.mapion.ui.home;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Environment;
 import android.view.Gravity;
 import android.view.Menu;
 import android.widget.Toast;
@@ -12,7 +21,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.mapion.R;
 import com.example.mapion.dialogs.DialogFactory;
 import com.example.mapion.models.MCurrentRoute;
+import com.example.mapion.models.MMediaContent;
 import com.example.mapion.models.MTempFreeRoutes;
+import com.example.mapion.models.TotalSettings;
+import com.example.mapion.models.route.MContent;
 import com.example.mapion.models.route.MPolygon;
 import com.example.mapion.models.route.MRoute;
 import com.example.mapion.seder.SenderRouteFactory;
@@ -27,9 +39,11 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /*
 Работа с маршрутами
@@ -41,8 +55,14 @@ public class WorkerFreeRoute {
     private Activity mActivity;
     private Locale currentLocale;
     NavigationView navigationView;
+    private TotalSettings totalSettings=TotalSettings.getInstance();
+
+    private BroadcastReceiver onDownloadComplete;
+
+    private MMediaContent mMediaContent=new MMediaContent();
 
 
+    private  ProgressDialog mDialog ;
     public WorkerFreeRoute(MapView mapView,  DrawerLayout layout, Activity activity){
 
         mMapView = mapView;
@@ -65,6 +85,22 @@ public class WorkerFreeRoute {
         if(mRoute!=null){
             workerMapCurrentRoute(mRoute);
         }
+        onDownloadComplete = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //Fetching the download id received with the broadcast
+                long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                //Checking if the received broadcast is for our enqueued download by matching download id
+                if (mMediaContent.idDownload == id) {
+                    Toast.makeText(mActivity, "Download Completed", Toast.LENGTH_SHORT).show();
+                    if(mDialog!=null)mDialog.dismiss();
+                }
+            }
+        };
+        mActivity.registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+    public void UnregisterReceiver(){
+        mActivity.unregisterReceiver(onDownloadComplete);
     }
     public void OpenClose(){
         if(drawerLayout.isDrawerOpen(Gravity.RIGHT)){
@@ -145,8 +181,58 @@ public class WorkerFreeRoute {
         mMapView.getOverlayManager().add(polygon);
     }
     void getContentPolygon(MPolygon mPolygon){
+        UUID idContent=null;
+        for (MContent mContent : mPolygon.content) {
+            if(mContent.isDefault){
+                idContent=mContent.id;
+            }
+        }
+        if(idContent==null){
+            DialogFactory.dialogInfo((AppCompatActivity) mActivity,"downloader content",
+                    "Default content not found",null);
+            return;
+        }
+        String fileName=idContent+".mp3";
+        mMediaContent.fileName =fileName;
+        mMediaContent.message="simple file";
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),fileName);
+        if(file.exists()) {
+            showMediaPlayer(mMediaContent);
+            return;
+        }
+        //Toast.makeText(mActivity, fileName, Toast.LENGTH_LONG).show();
+        //return;
+        /*
+        Запуск диалога загрузки файла
+         */
+        if(mDialog!=null) mDialog.dismiss();
+        mDialog  = new ProgressDialog(mActivity);
+        mDialog.setMessage("Download file");
+        mDialog.setProgress(ProgressDialog.STYLE_SPINNER);
+        mDialog.show();
+        DownloadManager manager;
+        manager = (DownloadManager) mActivity.getSystemService(Context.DOWNLOAD_SERVICE);
+        String url = totalSettings.url+"/HubApi/GetFileStream?id="+idContent;
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 
-        Toast.makeText(mActivity, ""+mPolygon.id, Toast.LENGTH_SHORT).show();
+
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,fileName);
+        mMediaContent.idDownload=manager.enqueue(request);
+
+    }
+    private void showMediaPlayer(MMediaContent mMediaContent){
+
+//        MediaPlayer  mpintro = MediaPlayer.create(mActivity, Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"/"+mMediaContent.fileName));
+//        mpintro.setLooping(true);
+//        mpintro.start();
+
+        DialogFactory.dialogMediaPlayer((AppCompatActivity) mActivity,
+                mMediaContent.message,
+                mMediaContent.fileName, o -> {
+
+        });
     }
 
     void setPosition(MRoute mRoute){
@@ -168,4 +254,5 @@ public class WorkerFreeRoute {
         GeoPoint startPoint = new GeoPoint(d2, d1);
         mMapController.setCenter(startPoint);
     }
+
 }
