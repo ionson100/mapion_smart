@@ -3,6 +3,7 @@ package com.example.mapion.dialogs;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapion.IAction;
+import com.example.mapion.models.MMediaContent;
 import com.example.mapion.models.MTempFreeRoutes;
 
 public class DialogFactory {
@@ -28,11 +29,10 @@ public class DialogFactory {
         dialog.route=route;
         dialog.show(activity.getSupportFragmentManager(),DialogGiftRoute.TAG);
     }
-    public static DialogMediaPlayer dialogMediaPlayer(AppCompatActivity activity,String message,String pathFile,IAction<Object>  iAction){
+    public static DialogMediaPlayer dialogMediaPlayer(AppCompatActivity activity, MMediaContent mMediaContent, IAction<Object>  iAction){
         DialogMediaPlayer dialogMediaPlayer = new DialogMediaPlayer();
         dialogMediaPlayer.iAction=iAction;
-        dialogMediaPlayer.message=message;
-        dialogMediaPlayer.fileName=pathFile;
+        dialogMediaPlayer.mMediaContent=mMediaContent;
         dialogMediaPlayer.mActivity=activity;
         dialogMediaPlayer.show(activity.getSupportFragmentManager(),DialogMediaPlayer.TAG);
         return dialogMediaPlayer;

@@ -22,6 +22,7 @@ import com.example.mapion.R;
 import com.example.mapion.dialogs.DialogFactory;
 import com.example.mapion.models.MCurrentRoute;
 import com.example.mapion.models.MMediaContent;
+import com.example.mapion.models.MMenuRouteStorage;
 import com.example.mapion.models.MTempFreeRoutes;
 import com.example.mapion.models.TotalSettings;
 import com.example.mapion.models.route.MContent;
@@ -81,10 +82,12 @@ public class WorkerFreeRoute {
             });
             return false;
         });
-        MRoute mRoute=MCurrentRoute.getCurrentRoute();
-        if(mRoute!=null){
-            workerMapCurrentRoute(mRoute);
-        }
+       MCurrentRoute.getCurrentRoute(activity,mRoute -> {
+            if(mRoute!=null){
+                workerMapCurrentRoute(mRoute);
+            }
+        });
+
         onDownloadComplete = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -98,6 +101,9 @@ public class WorkerFreeRoute {
             }
         };
         mActivity.registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+        List<MTempFreeRoutes> list=MMenuRouteStorage.getMTempFreeRoutesForMenu();
+        InitMenuRoute(list);
     }
     public void UnregisterReceiver(){
         mActivity.unregisterReceiver(onDownloadComplete);
@@ -112,18 +118,25 @@ public class WorkerFreeRoute {
     private void innerRequestFreeRoute(){
                                     BoundingBox boundingBox = mMapView.getProjection().getBoundingBox();
                 new SenderRouteFactory().getFreeRoute(boundingBox,mActivity,(s) -> {
-                    Utils.listFreeRoutes=s;
-                    Menu m= navigationView.getMenu();
-                    m.clear();
-                     String lang=currentLocale.getCountry().toLowerCase();
-                     int index=0;
-                    for (MTempFreeRoutes route : s) {
-                        m.add(0,index,0,route.getNames(lang));
-                        index++;
-                    }
+                    InitMenuRoute(s);
                     drawerLayout.openDrawer(Gravity.RIGHT);
+                    MMenuRouteStorage.saveRouteAsMenu(s);
                 });
     }
+
+    private void InitMenuRoute(List<MTempFreeRoutes> s) {
+        if(s==null||s.size()==0) return;
+        Utils.listFreeRoutes= s;
+        Menu m= navigationView.getMenu();
+        m.clear();
+        String lang=currentLocale.getCountry().toLowerCase();
+        int index=0;
+        for (MTempFreeRoutes route : s) {
+            m.add(0,index,0,route.getNames(lang));
+            index++;
+        }
+    }
+
     private void showRouteToMap(MRoute route){
         // запрос к базе за маршрутом
         workerMapNewRoute(route);
@@ -181,45 +194,55 @@ public class WorkerFreeRoute {
         mMapView.getOverlayManager().add(polygon);
     }
     void getContentPolygon(MPolygon mPolygon){
-        UUID idContent=null;
+        MContent mContentCore=null;
+        if(mPolygon.content==null) {
+            DialogFactory.dialogInfo((AppCompatActivity) mActivity,"downloader content",
+                    "Polygon has no content",null);
+            return;
+        }
         for (MContent mContent : mPolygon.content) {
             if(mContent.isDefault){
-                idContent=mContent.id;
+                mContentCore=mContent;
             }
         }
-        if(idContent==null){
+        if(mContentCore==null){
             DialogFactory.dialogInfo((AppCompatActivity) mActivity,"downloader content",
                     "Default content not found",null);
             return;
         }
-        String fileName=idContent+".mp3";
+        String fileName=mContentCore.id+".mp3";
         mMediaContent.fileName =fileName;
-        mMediaContent.message="simple file";
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),fileName);
-        if(file.exists()) {
-            showMediaPlayer(mMediaContent);
-            return;
-        }
+        mMediaContent.message=mPolygon.getName(mActivity);
+        mMediaContent.type=mContentCore.contentType;
+        mMediaContent.size=mContentCore.contentSize;
+        mMediaContent.url=totalSettings.url+"/HubApi/GetFileStream?id="+mContentCore.id;
+        showMediaPlayer(mMediaContent);
+
+//        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),fileName);
+//        if(file.exists()) {
+//            showMediaPlayer(mMediaContent);
+//            return;
+//        }
         //Toast.makeText(mActivity, fileName, Toast.LENGTH_LONG).show();
         //return;
         /*
         Запуск диалога загрузки файла
          */
-        if(mDialog!=null) mDialog.dismiss();
-        mDialog  = new ProgressDialog(mActivity);
-        mDialog.setMessage("Download file");
-        mDialog.setProgress(ProgressDialog.STYLE_SPINNER);
-        mDialog.show();
-        DownloadManager manager;
-        manager = (DownloadManager) mActivity.getSystemService(Context.DOWNLOAD_SERVICE);
-        String url = totalSettings.url+"/HubApi/GetFileStream?id="+idContent;
-        Uri uri = Uri.parse(url);
-        DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
-
-
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,fileName);
-        mMediaContent.idDownload=manager.enqueue(request);
+//        if(mDialog!=null) mDialog.dismiss();
+//        mDialog  = new ProgressDialog(mActivity);
+//        mDialog.setMessage("Download file");
+//        mDialog.setProgress(ProgressDialog.STYLE_SPINNER);
+//        mDialog.show();
+//        DownloadManager manager;
+//        manager = (DownloadManager) mActivity.getSystemService(Context.DOWNLOAD_SERVICE);
+//        String url = totalSettings.url+"/HubApi/GetFileStream?range=true&id="+mContentCore.id;
+//        Uri uri = Uri.parse(url);
+//        DownloadManager.Request request = new DownloadManager.Request(uri);
+//        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+//
+//
+//        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,fileName);
+//        mMediaContent.idDownload=manager.enqueue(request);
 
     }
     private void showMediaPlayer(MMediaContent mMediaContent){
@@ -229,8 +252,7 @@ public class WorkerFreeRoute {
 //        mpintro.start();
 
         DialogFactory.dialogMediaPlayer((AppCompatActivity) mActivity,
-                mMediaContent.message,
-                mMediaContent.fileName, o -> {
+                mMediaContent, o -> {
 
         });
     }

@@ -25,24 +25,19 @@ public class DialogYesNo extends BaseDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_yes_no, null);
 
-        ((TextView)v.findViewById(R.id.title_dalog)).setText(String.valueOf(this.title));
+        ((TextView)v.findViewById(R.id.title_dialog)).setText(String.valueOf(this.title));
 
         ((TextView)v.findViewById(R.id.d_message)).setText(String.valueOf(this.message));
 
-        v.findViewById(R.id.bt_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
+        v.findViewById(R.id.bt_close).setOnClickListener(v1 -> {
+            dismiss();
         });
-        v.findViewById(R.id.bt_save).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(iAction!=null){
-                    iAction.Action(null);
-                }
-                dismiss();
-            }
+        v.findViewById(R.id.bt_save).setOnClickListener(v12 -> {
+            if(iAction!=null){iAction.Action(null);}
+            dismiss();
+        });
+        v.findViewById(R.id.bt_cancel).setOnClickListener(v13 -> {
+            dismiss();
         });
 
 

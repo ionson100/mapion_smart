@@ -57,6 +57,14 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
         drawer = binding.drawerLayout;
+        binding.appBarMain.getRoot().findViewById(R.id.fab_menu).setOnClickListener(v -> {
+            if(drawer.isDrawerOpen(Gravity.LEFT)){// закрываем основное меню
+                drawer.closeDrawer(Gravity.LEFT);
+
+            }else{
+                drawer.openDrawer(Gravity.LEFT);// open left menu
+            }
+        });
         drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {

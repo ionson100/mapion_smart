@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@android:color/white"
     android:layout_width="match_parent"
+    android:theme="@style/AppTheme"
     android:layout_height="match_parent">
     <LinearLayout
         android:background="@color/color21"
@@ -15,7 +16,7 @@
         <TextView
             android:textColor="@color/white"
             android:gravity="center"
-            android:id="@+id/title_dalog"
+            android:id="@+id/title_dialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <EditText

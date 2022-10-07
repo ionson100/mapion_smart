@@ -49,5 +49,11 @@
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">0</item>
     </style>
+    <style name="buttonClose">
+        <item name="android:background">@drawable/button_close</item>
+    </style>
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/img_3</item>
+    </style>
 
 </resources>

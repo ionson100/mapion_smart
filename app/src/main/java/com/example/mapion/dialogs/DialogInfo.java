@@ -26,7 +26,7 @@ public class DialogInfo extends BaseDialog {
   AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
   View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_info, null);
 
-  ((TextView)v.findViewById(R.id.title_dalog)).setText(this.title);
+  ((TextView)v.findViewById(R.id.title_dialog)).setText(this.title);
   ((TextView)v.findViewById(R.id.d_message)).setText(this.message);
 
   v.findViewById(R.id.bt_close).setOnClickListener(v1 -> {

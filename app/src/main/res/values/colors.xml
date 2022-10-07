@@ -29,4 +29,5 @@
 
     <color name="green2">#D8EED8</color>
     <color name="red_error">#FF5722</color>
+    <color name="transparentColor">#02F44336</color>
 </resources>

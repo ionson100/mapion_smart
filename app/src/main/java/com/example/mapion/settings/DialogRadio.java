@@ -32,7 +32,7 @@ public class DialogRadio extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_radio, null);
 
-        ((TextView)v.findViewById(R.id.title_dalog)).setText(this.ws.item.strbig());
+        ((TextView)v.findViewById(R.id.title_dialog)).setText(this.ws.item.strbig());
 
         Class aClass=ws.item.TYPE_SETTINGS_LIST();
         ISettingsList s=null;

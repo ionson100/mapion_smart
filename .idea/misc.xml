@@ -4,11 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/border.xml" value="0.192" />
         <entry key="app/src/main/res/drawable/button.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/button_background.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/button_background1.xml" value="0.1435" />
+        <entry key="app/src/main/res/drawable/button_background_close.xml" value="0.192" />
         <entry key="app/src/main/res/drawable/button_background_dark_blue_active_pizdaticus.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/button_background_dark_blue_normal_pizdaticus.xml" value="0.1435" />
+        <entry key="app/src/main/res/drawable/button_close.xml" value="0.192" />
         <entry key="app/src/main/res/drawable/button_dark_blue_pizdaticus.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/ic_menu_camera.xml" value="0.1435" />
         <entry key="app/src/main/res/drawable/ic_menu_gallery.xml" value="0.1435" />
@@ -29,6 +32,7 @@
         <entry key="app/src/main/res/layout/dialog_media_payer.xml" value="0.3375" />
         <entry key="app/src/main/res/layout/dialog_radio.xml" value="0.2828125" />
         <entry key="app/src/main/res/layout/dialog_yes_no.xml" value="0.3609375" />
+        <entry key="app/src/main/res/layout/fragment_gallery.xml" value="0.27708333333333335" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2803442028985507" />
         <entry key="app/src/main/res/layout/fragment_slideshow.xml" value="0.3619791666666667" />
         <entry key="app/src/main/res/layout/item_radio.xml" value="0.2828125" />

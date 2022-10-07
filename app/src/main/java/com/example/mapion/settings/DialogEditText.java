@@ -31,7 +31,7 @@ public class DialogEditText extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_edit_text, null);
 
-        ((TextView)v.findViewById(R.id.title_dalog)).setText(this.ws.item.strbig());
+        ((TextView)v.findViewById(R.id.title_dialog)).setText(this.ws.item.strbig());
         try {
             editText=v.findViewById(R.id.edit_text);
             editText.setInputType(ws.item.EDIT_INPUT_TYPE());

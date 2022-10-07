@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
@@ -15,6 +16,7 @@ import com.example.mapion.BuildConfig;
 import com.example.mapion.R;
 import com.example.mapion.databinding.FragmentHomeBinding;
 import com.example.mapion.databinding.LeftNavigationFreeBinding;
+import com.example.mapion.dialogs.DialogFactory;
 import com.example.mapion.models.MStorageMapView;
 import com.example.mapion.seder.SenderRouteFactory;
 import com.example.mapion.utils.IOnBackPressed;
@@ -92,7 +94,6 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
 
             @Override
             public void onClick(View view) {
-
                 if(mGpsTracker==null){
                     mGpsTracker=new GPSTracker(getContext());
                     if(mGpsTracker.canGetLocation==false){
@@ -107,6 +108,7 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
                                 .setAction("Action", null).show();
                     }
                 }else{
+                    mGpsTracker.stopUsingGPS();
                     mGpsTracker=null;
                     Snackbar.make(view, "Close Location", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();

@@ -11,5 +11,6 @@ public class ModelCollection {
         classes.add(MStorageMapView.class);
         classes.add(TotalSettings.class);
         classes.add(MCurrentRoute.class);
+        classes.add(MMenuRouteStorage.class);
     }
 }

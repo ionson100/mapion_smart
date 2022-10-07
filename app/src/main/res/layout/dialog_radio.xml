@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
     <TextView
         android:gravity="center"
-        android:id="@+id/title_dalog"
+        android:id="@+id/title_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <RadioGroup

@@ -27,13 +27,16 @@ public class DialogGiftRoute extends BaseDialog{
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_gift_route, null);
         Locale currentLocale=getActivity().getResources().getConfiguration().locale;
         String lang=currentLocale.getCountry().toLowerCase();
-        ((TextView)v.findViewById(R.id.title_dalog)).setText("Selected Route");
+        ((TextView)v.findViewById(R.id.title_dialog)).setText("Selected Route");
         ((TextView)v.findViewById(R.id.d_name)).setText(this.route.getNames(lang));
         ((TextView)v.findViewById(R.id.d_description)).setText(this.route.getDescription(lang));
         v.findViewById(R.id.bt_close).setOnClickListener(v1 -> {
             dismiss();
         });
-        v.findViewById(R.id.bt_show).setOnClickListener(v1 -> {
+        v.findViewById(R.id.bt_cancel).setOnClickListener(v1 -> {
+            dismiss();
+        });
+        v.findViewById(R.id.bt_save).setOnClickListener(v1 -> {
             dismiss();
             if(iAction!=null){
                 iAction.Action(route);

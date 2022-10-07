@@ -8,4 +8,6 @@ public class MContent extends BaseModelContent{
     public String lang ;
     public boolean isDefault;
     public boolean isFree;
+    public String contentType;
+    public long contentSize;
 }
