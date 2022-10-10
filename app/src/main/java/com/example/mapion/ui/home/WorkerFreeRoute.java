@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
@@ -32,11 +33,14 @@ import com.example.mapion.seder.SenderRouteFactory;
 import com.example.mapion.seder.SenderRouteFreeOne;
 import com.example.mapion.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.IconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 
@@ -145,11 +149,15 @@ public class WorkerFreeRoute {
     private void workerMapNewRoute(MRoute mRoute){
 
         mMapView.getOverlays().clear();
+
         setPosition(mRoute);
+
         addLineRoute(mRoute);
         for (MPolygon polygon : mRoute.polygons) {
             addPolygonItems(polygon);
         }
+
+        addStartOverlayRoute(mRoute);
         MCurrentRoute.saveRouteAsCurrent(mRoute);
     }
     private void workerMapCurrentRoute(MRoute mRoute){
@@ -157,11 +165,25 @@ public class WorkerFreeRoute {
         mMapView.getOverlays().clear();
         // setPosition(mRoute);
         addLineRoute(mRoute);
+
         for (MPolygon polygon : mRoute.polygons) {
             addPolygonItems(polygon);
         }
+        addStartOverlayRoute(mRoute);
         //MCurrentRoute.saveRouteAsCurrent(mRoute);
     }
+    void addStartOverlayRoute(MRoute mRoute){
+        GeoPoint point=new GeoPoint(mRoute.coordinates.coordinates.get(0).get(1),
+                mRoute.coordinates.coordinates.get(0).get(0));
+        Drawable newMarker = mActivity.getResources().getDrawable(R.drawable.ic_start_24);
+        IconOverlay olItem = new IconOverlay();
+        olItem.set(point,newMarker);
+
+
+
+        mMapView.getOverlays().add(olItem);
+    }
+
     void addLineRoute(MRoute mRoute){
         List<GeoPoint> geoPoints = new ArrayList();
         //double aLatitude, final double aLongitude
@@ -216,7 +238,13 @@ public class WorkerFreeRoute {
         mMediaContent.type=mContentCore.contentType;
         mMediaContent.size=mContentCore.contentSize;
         mMediaContent.url=totalSettings.url+"/HubApi/GetFileStream?id="+mContentCore.id;
-        showMediaPlayer(mMediaContent);
+
+
+        Intent intent = new Intent(Utils.BR_SERVICE);
+        intent.putExtra("type",1);
+        intent.putExtra("data",new Gson().toJson(mMediaContent));
+        mActivity.sendBroadcast(intent);
+        //showMediaPlayer(mMediaContent);
 
 //        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),fileName);
 //        if(file.exists()) {

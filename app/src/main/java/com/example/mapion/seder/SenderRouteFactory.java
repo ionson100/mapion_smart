@@ -56,7 +56,7 @@ public class SenderRouteFactory {
         mDialog.setMessage("Getting data from the server");
         mDialog.setProgress(ProgressDialog.STYLE_SPINNER);
 
-        new ActionTask().execute();
+        new ActionTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, iAction);
     }
     private class ActionTask extends AsyncTask<IAction, Void, Void> {
         @Override

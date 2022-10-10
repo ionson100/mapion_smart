@@ -27,7 +27,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_menu_mylocation"
+        app:srcCompat="@drawable/ic_baseline_my_location_24"
 
 
         app:layout_constraintRight_toRightOf="parent"
@@ -42,7 +42,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginStart="@dimen/fab_margin"
         android:layout_marginTop="100dp"
-        app:srcCompat="@android:drawable/ic_dialog_map"
+        app:srcCompat="@drawable/ic_baseline_map_24"
 
 
         app:layout_constraintTop_toTopOf="parent"

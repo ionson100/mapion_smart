@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public  class Utils {
+    public static final String BR_HOST = "ionson100.br_1";
+    public static final String BR_SERVICE = "inson100.br_2";
     public static List<MTempFreeRoutes> listFreeRoutes;
     public static Fragment CURRENT_FRAGMENT;
     public static HomeFragment HOME_FRAGMENT;

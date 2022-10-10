@@ -1,5 +1,6 @@
 package com.example.mapion.ui.home;
 
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,10 +34,13 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 public class HomeFragment extends Fragment implements IOnBackPressed {
 
+    boolean isLocation=false;
+    private  MyLocationNewOverlay locationOverlay;
     GPSTracker mGpsTracker;
     private MapView mMap = null;
     private IMapController mMapController;
@@ -88,31 +92,52 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
         //startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         //map.getOverlays().add(startMarker);
 
+        GpsMyLocationProvider prov= new GpsMyLocationProvider(getContext());
+        prov.addLocationSource(LocationManager.NETWORK_PROVIDER);
+        prov.addLocationSource(LocationManager.GPS_PROVIDER);
+        locationOverlay = new MyLocationNewOverlay(prov, mMap);
+        locationOverlay.disableMyLocation();
+
         FloatingActionButton fab = root.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             private MyLocationNewOverlay mLocationOverlay;
 
             @Override
             public void onClick(View view) {
-                if(mGpsTracker==null){
-                    mGpsTracker=new GPSTracker(getContext());
-                    if(mGpsTracker.canGetLocation==false){
-                        mGpsTracker.showSettingsAlert();
-                    }else{
-                        GeoPoint startPoint = new GeoPoint(mGpsTracker.getLatitude(), mGpsTracker.getLongitude());
-                        mMapController.setCenter(startPoint);
-                        mGpsTracker.onLocationChangedCore(location -> {
-                            mMapController.setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
-                        });
-                        Snackbar.make(view, "Open Location", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                    }
+
+                if(isLocation==false){
+                    locationOverlay.enableMyLocation();
+                    mMap.getOverlayManager().add(locationOverlay);
+                    mMap.invalidate();
+                    isLocation=true;
+
                 }else{
-                    mGpsTracker.stopUsingGPS();
-                    mGpsTracker=null;
-                    Snackbar.make(view, "Close Location", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    locationOverlay.disableMyLocation();
+                    mMap.getOverlayManager().remove(locationOverlay);
+                    mMap.invalidate();
+                    isLocation=false;
                 }
+
+
+//                if(mGpsTracker==null){
+//                    mGpsTracker=new GPSTracker(getContext());
+//                    if(mGpsTracker.canGetLocation==false){
+//                        mGpsTracker.showSettingsAlert();
+//                    }else{
+//                        GeoPoint startPoint = new GeoPoint(mGpsTracker.getLatitude(), mGpsTracker.getLongitude());
+//                        mMapController.setCenter(startPoint);
+//                        mGpsTracker.onLocationChangedCore(location -> {
+//                            mMapController.setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
+//                        });
+//                        Snackbar.make(view, "Open Location", Snackbar.LENGTH_LONG)
+//                                .setAction("Action", null).show();
+//                    }
+//                }else{
+//                    mGpsTracker.stopUsingGPS();
+//                    mGpsTracker=null;
+//                    Snackbar.make(view, "Close Location", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+//                }
 
             }
         });

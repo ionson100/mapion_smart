@@ -1,0 +1,127 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="3dp"
+    android:backgroundTint="@color/black"
+    android:theme="@style/AppTheme"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+
+    tools:context=".dialogs.DialogMediaPlayer">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@color/white"
+                android:text="dfdfdf"
+                android:id="@+id/media_text_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:gravity="right"
+            android:layout_weight="7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/media_close_dialog"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                style="@style/buttonClose"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:text="close" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/media_constrains"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+
+
+            android:layout_width="40dp"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                style="@style/buttonClose"
+                android:id="@+id/media_start_dialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:src="@android:drawable/ic_media_play"
+                android:text="PLAY SOUND" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="0.6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <SeekBar
+                android:progressBackgroundTint="@color/white"
+                style="@style/MySeekBar"
+                android:id="@+id/seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+              />
+        </LinearLayout>
+        <LinearLayout
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/duration_text"
+                android:textSize="10dp"
+                android:text="00.66"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:visibility="gone"
+        android:gravity="center"
+        android:id="@+id/media_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/media_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/media_text_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+</LinearLayout>

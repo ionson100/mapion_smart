@@ -2,11 +2,14 @@ package com.example.mapion;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.widget.Toast;
 
@@ -18,9 +21,14 @@ import com.example.mapion.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -35,27 +43,28 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+    private PlayerWorker playerWorker;
 
     private  DrawerLayout drawer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
+
         Starter.start(getBaseContext());
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
 
         setSupportActionBar(binding.appBarMain.toolbar);
-//        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+
         drawer = binding.drawerLayout;
         binding.appBarMain.getRoot().findViewById(R.id.fab_menu).setOnClickListener(v -> {
             if(drawer.isDrawerOpen(Gravity.LEFT)){// закрываем основное меню
@@ -93,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,R.id.nav_close_current_route)
                 .setOpenableLayout(drawer)
@@ -108,17 +116,22 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE});
-
-
-
+         playerWorker=new PlayerWorker(binding.getRoot(),this);
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+            super.onDestroy();
+            this.playerWorker.unregister();
     }
 
     @Override
@@ -187,10 +200,8 @@ public class MainActivity extends AppCompatActivity {
         boolean sd=Utils.CURRENT_FRAGMENT instanceof IOnBackPressed;
         if (sd){ // очищаем маршрут текущий
             ((IOnBackPressed) Utils.CURRENT_FRAGMENT).clearRoute();
-
         }
         Toast.makeText(this, "Ok Route Out ", Toast.LENGTH_SHORT).show();
         drawer.closeDrawer(Gravity.LEFT);
-
     }
 }

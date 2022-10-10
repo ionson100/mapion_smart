@@ -31,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 public class SenderRouteFreeOne {
     private ProgressDialog mDialog ;
@@ -52,7 +53,7 @@ public class SenderRouteFreeOne {
         mDialog.setMessage("Getting data from the server");
         mDialog.setProgress(ProgressDialog.STYLE_SPINNER);
 
-        new ActionTask().execute();
+        new ActionTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, iAction);
     }
     private class ActionTask extends AsyncTask<IAction, Void, Void> {
         @Override
