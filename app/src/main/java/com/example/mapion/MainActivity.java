@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.INTERNET,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.FOREGROUND_SERVICE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE});
          playerWorker=new PlayerWorker(binding.getRoot(),this);
 

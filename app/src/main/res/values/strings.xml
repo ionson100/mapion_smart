@@ -19,4 +19,7 @@
     <string name="backward">Backward</string>
     <string name="forward">Forward</string>
     <string name="info">Info</string>
+    <string name="notification_message">assa</string>
+    <string name="notification_title">assa2</string>
+    <string name="ticker_text">ticket</string>
 </resources>

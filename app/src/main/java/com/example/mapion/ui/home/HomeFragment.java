@@ -41,14 +41,15 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
 
     boolean isLocation=false;
     private  MyLocationNewOverlay locationOverlay;
-    GPSTracker mGpsTracker;
+
     private MapView mMap = null;
     private IMapController mMapController;
-    //private Marker startMarker;
+
     private FragmentHomeBinding binding;
     private MStorageMapView storageMapView=MStorageMapView.getInstance();
     DrawerLayout drawerLayout;
     WorkerFreeRoute workerFreeRoute;
+    private Animation mAnimation;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -62,11 +63,8 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
         View root = binding.getRoot();
         mMap = binding.map;
         drawerLayout=binding.myHomeDraver;
+        mAnimation=new Animation(mMap,root,getActivity());
 
-
-        //navigationViewFree=binding.;
-
-        //startMarker = new Marker(map);
 
         mMap.setTileSource(TileSourceFactory.MAPNIK);
 
@@ -76,10 +74,6 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
         mMapController.setZoom(storageMapView.zoom);
         GeoPoint startPoint = new GeoPoint(storageMapView.lat, storageMapView.lon);
         mMapController.setCenter(startPoint);
-        //startMarker.setPosition(startPoint);
-
-        //startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-        //map.getOverlays().add(startMarker);
 
 
         // add compass to map
@@ -87,10 +81,6 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
                 new InternalCompassOrientationProvider(getActivity()), mMap);
         compassOverlay.enableCompass();
         mMap.getOverlays().add(compassOverlay);
-        //startMarker.setPosition(startPoint);
-
-        //startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-        //map.getOverlays().add(startMarker);
 
         GpsMyLocationProvider prov= new GpsMyLocationProvider(getContext());
         prov.addLocationSource(LocationManager.NETWORK_PROVIDER);
@@ -110,12 +100,14 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
                     mMap.getOverlayManager().add(locationOverlay);
                     mMap.invalidate();
                     isLocation=true;
+                    fab.setImageDrawable(getActivity().getDrawable(R.drawable.ic_baseline_my_location_green_24));
 
                 }else{
                     locationOverlay.disableMyLocation();
                     mMap.getOverlayManager().remove(locationOverlay);
                     mMap.invalidate();
                     isLocation=false;
+                    fab.setImageDrawable(getActivity().getDrawable(R.drawable.ic_baseline_my_location_24));
                 }
 
 
@@ -182,6 +174,7 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        mAnimation.destroy();
     }
 
     @Override

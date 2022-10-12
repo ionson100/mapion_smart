@@ -1,15 +1,21 @@
 package com.example.mapion;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.IBinder;
 
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.mapion.dialogs.DialogMediaPlayer;
@@ -22,18 +28,33 @@ import java.util.concurrent.TimeUnit;
 
 public class MyServicePayer extends Service   {
 
+    private static final String CHANNEL_DEFAULT_IMPORTANCE = "assa123";
+    private static final int ONGOING_NOTIFICATION_ID = 12334;
+    private boolean isStart=false;
     private boolean isCommitPlay;
     private MediaPlayer mediaPlayer ;
     private MMediaContent mMediaContent;
+    private boolean isAnimation;
     private BroadcastReceiver receiverPlayer=new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             int t= intent.getIntExtra("type",-1);
             switch (t){
-                case 1:{
+                case 1:{// простое ручное воспроизведение
                     String s=intent.getStringExtra("data");
                     if(s!=null){
+                        isAnimation=false;
+                        mMediaContent=new Gson().fromJson(s,MMediaContent.class);
+                        startPlayer(mMediaContent);
+                    }
+                    break;
+                }
+
+                case 1001:{
+                    String s=intent.getStringExtra("data");// воспроизведение с анимации
+                    if(s!=null){
+                        isAnimation=true;
                         mMediaContent=new Gson().fromJson(s,MMediaContent.class);
                         startPlayer(mMediaContent);
                     }
@@ -44,7 +65,7 @@ public class MyServicePayer extends Service   {
                     playSong();
                     break;
                 }
-                case 3:{ // кнопка старт стоп нажата
+                case 3:{ // кнопка закрытия
                     mMediaContent=null;
                     clearMediaPlayer();
                     break;
@@ -80,9 +101,38 @@ public class MyServicePayer extends Service   {
     };
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(isStart==false){
+            this.registerReceiver(receiverPlayer,new IntentFilter(Utils.BR_SERVICE));
+            isStart=true;
+            String NOTIFICATION_CHANNEL_ID = "com.example.audiomap.ionson100";
+            String channelName = "My Background Service";
+            NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+            chan.setLightColor(Color.BLUE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            assert manager != null;
+            manager.createNotificationChannel(chan);
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+            Notification notification = notificationBuilder.setOngoing(true)
+                    .setSmallIcon(R.drawable.ic_baseline_map_24)
+                    .setContentTitle("Map Sound travel")
+                    .setPriority(NotificationManager.IMPORTANCE_MIN)
+                    .setCategory(Notification.CATEGORY_SERVICE)
+                    .build();
+            startForeground(2, notification);
+
+        }
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
-        this.registerReceiver(receiverPlayer,new IntentFilter(Utils.BR_SERVICE));
+
+
     }
 
     @Override
@@ -126,6 +176,7 @@ public class MyServicePayer extends Service   {
 
     }
     void createAndStartMedia(MMediaContent mMediaContent){
+        boolean pr=isAnimation;
         if(mediaPlayer!=null){
             clearMediaPlayer();
             isCommitPlay=false;
@@ -135,6 +186,7 @@ public class MyServicePayer extends Service   {
                 e.printStackTrace();
             }
         }
+        isAnimation=pr;
         Intent intent = new Intent(Utils.BR_HOST);
         intent.putExtra("type",101); // открыть плейер
         intent.putExtra("data",android.R.drawable.ic_media_play);
@@ -200,17 +252,27 @@ public class MyServicePayer extends Service   {
     }
 
     private void clearMediaPlayer() {
+
         isCommitPlay=true;
         if(mediaPlayer!=null){
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
-            Intent intent1 = new Intent(Utils.BR_HOST);
-            intent1.putExtra("type",101); // открыть плейер
-            intent1.putExtra("data",android.R.drawable.ic_media_play);
-            sendBroadcast(intent1);
+            if(isAnimation==false){
+                Intent intent1 = new Intent(Utils.BR_HOST);
+                intent1.putExtra("type",101); // коне воспроизведегтя
+                intent1.putExtra("data",android.R.drawable.ic_media_play);
+                sendBroadcast(intent1);
+            }else {
+                Intent intent1 = new Intent(Utils.BR_HOST);
+                intent1.putExtra("type",1011); // коне воспроизведегтя для анимации
+                intent1.putExtra("data",android.R.drawable.ic_media_play);
+                sendBroadcast(intent1);
+            }
+
 
         }
+        isAnimation=false;
 
     }
 
@@ -218,6 +280,7 @@ public class MyServicePayer extends Service   {
     public void onDestroy() {
         super.onDestroy();
         clearMediaPlayer();
+        isStart=false;
     }
 
     private class TaskSeek extends AsyncTask<Void, Void, Void> {

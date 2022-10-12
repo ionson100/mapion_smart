@@ -40,6 +40,7 @@ import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
@@ -104,13 +105,13 @@ public class WorkerFreeRoute {
                 }
             }
         };
-        mActivity.registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        //mActivity.registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         List<MTempFreeRoutes> list=MMenuRouteStorage.getMTempFreeRoutesForMenu();
         InitMenuRoute(list);
     }
     public void UnregisterReceiver(){
-        mActivity.unregisterReceiver(onDownloadComplete);
+        //mActivity.unregisterReceiver(onDownloadComplete);
     }
     public void OpenClose(){
         if(drawerLayout.isDrawerOpen(Gravity.RIGHT)){
@@ -175,8 +176,9 @@ public class WorkerFreeRoute {
     void addStartOverlayRoute(MRoute mRoute){
         GeoPoint point=new GeoPoint(mRoute.coordinates.coordinates.get(0).get(1),
                 mRoute.coordinates.coordinates.get(0).get(0));
-        Drawable newMarker = mActivity.getResources().getDrawable(R.drawable.ic_start_24);
+        Drawable newMarker = mActivity.getResources().getDrawable(R.drawable.ic_start_route_24);
         IconOverlay olItem = new IconOverlay();
+
         olItem.set(point,newMarker);
 
 
@@ -195,6 +197,7 @@ public class WorkerFreeRoute {
         line.setPoints(geoPoints);
         mMapView.getOverlayManager().add(line);
     }
+
     void addPolygonItems(MPolygon mPolygon){
         List<GeoPoint> geoPoints = new ArrayList<>();
         for (List<List<Double>> cPol : mPolygon.coordinates.coordinates) {
@@ -204,7 +207,19 @@ public class WorkerFreeRoute {
             }
         }
         Polygon polygon = new Polygon();
+        polygon.setId(String.valueOf(mPolygon.id));
         polygon.setOnClickListener((polygon1, mapView, eventPos) -> {
+
+
+            for (Overlay overlay : mMapView.getOverlayManager()) {
+                if(overlay instanceof Polygon){
+                    ((Polygon)overlay).getOutlinePaint().setStrokeWidth(2);
+                }
+            }
+            polygon1.getOutlinePaint().setStrokeWidth(5);
+            mapView.invalidate();
+
+
             getContentPolygon(mPolygon);
             return false;
         });
@@ -212,6 +227,7 @@ public class WorkerFreeRoute {
         // int a, int r, int g, int b
         polygon.getFillPaint().setARGB(10, 50,0,0);
         polygon.getOutlinePaint().setColor(Color.RED);
+        polygon.getOutlinePaint().setStrokeWidth(2);
         polygon.setPoints(geoPoints);
         mMapView.getOverlayManager().add(polygon);
     }

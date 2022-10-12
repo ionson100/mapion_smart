@@ -46,7 +46,9 @@
 
 
     </LinearLayout>
+
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/media_constrains"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -100,20 +102,21 @@
 
 
     <LinearLayout
-        android:visibility="gone"
+        android:visibility="visible"
         android:gravity="center"
         android:id="@+id/media_spinner"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ProgressBar
             android:id="@+id/progressBar1"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            style="?android:attr/progressBackgroundTint"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_centerHorizontal="true" />
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/media_error"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

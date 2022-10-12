@@ -54,6 +54,7 @@ public class PlayerWorker extends BroadcastReceiver {
             });
         }
         this.mainActivity.startService(new Intent(this.mainActivity.getBaseContext(),MyServicePayer.class));
+
         this.mainActivity.registerReceiver(this,new IntentFilter(Utils.BR_HOST));
         btStartStop.setOnClickListener(v -> {
             Intent intent = new Intent(Utils.BR_SERVICE);
@@ -110,6 +111,9 @@ public class PlayerWorker extends BroadcastReceiver {
             case 1:{ // открыть плейер
                 host.setVisibility(View.VISIBLE);
                 seekBar.setProgress(0);
+                mViewPlayerCore.setVisibility(View.GONE);
+                mViewSpinner.setVisibility(View.VISIBLE);
+                mViewError.setVisibility(View.GONE);
                 break;
             }
             case 2:{ // начала воспроизведения
@@ -125,6 +129,21 @@ public class PlayerWorker extends BroadcastReceiver {
                 int img= intent.getIntExtra("data",-1);
                 if(img!=-1){
                     btStartStop.setImageDrawable(ContextCompat.getDrawable(mainActivity, img));
+                }
+
+                break;
+            }
+
+            case 1011:{ // конец воспроизведения для анимации
+                int img= intent.getIntExtra("data",-1);
+                btClose.callOnClick();
+                if(img!=-1){
+                    btStartStop.setImageDrawable(ContextCompat.getDrawable(mainActivity, img));
+                }
+                {
+                    Intent intentC = new Intent(Utils.CONTINUE_ANIMATION);
+                    intentC.putExtra("type",312312); // перемещение ползунка
+                    mainActivity.sendBroadcast(intentC);
                 }
 
                 break;
