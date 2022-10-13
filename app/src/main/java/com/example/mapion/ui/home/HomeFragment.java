@@ -144,6 +144,7 @@ public class HomeFragment extends Fragment implements IOnBackPressed {
         workerFreeRoute=new WorkerFreeRoute(mMap,drawerLayout,getActivity());
         return root;
     }
+
     @Override
     public void onResume() {
         super.onResume();

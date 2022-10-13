@@ -12,5 +12,6 @@ public class ModelCollection {
         classes.add(TotalSettings.class);
         classes.add(MCurrentRoute.class);
         classes.add(MMenuRouteStorage.class);
+        classes.add(MAnimationStorage.class);
     }
 }

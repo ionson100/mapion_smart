@@ -14,6 +14,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -27,6 +29,12 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class MyServicePayer extends Service   {
+
+    //Handle incoming phone calls
+    private boolean ongoingCall = false;
+    private PhoneStateListener phoneStateListener;
+    private TelephonyManager telephonyManager;
+
 
     private static final String CHANNEL_DEFAULT_IMPORTANCE = "assa123";
     private static final int ONGOING_NOTIFICATION_ID = 12334;
@@ -94,11 +102,50 @@ public class MyServicePayer extends Service   {
                     stopSelf();
                     break;
                 }
+                case 22:{ // перегрузка маршрута, если плеер играет по маршруту делаем его не по маршруту
+                    isAnimation=false;
+                    break;
+                }
             }
 
 
         }
     };
+    //Handle incoming phone calls
+    private void callStateListener() {
+        // Get the telephony manager
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        //Starting listening for PhoneState changes
+        phoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                switch (state) {
+                    //if at least one call exists or the phone is ringing
+                    //pause the MediaPlayer
+                    case TelephonyManager.CALL_STATE_OFFHOOK:
+                    case TelephonyManager.CALL_STATE_RINGING:
+                        if (mediaPlayer != null&&mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                            ongoingCall = true;
+                        }
+                        break;
+                    case TelephonyManager.CALL_STATE_IDLE:
+                        // Phone idle. Start playing.
+                        if (mediaPlayer != null&&mediaPlayer.isPlaying()) {
+                            if (ongoingCall) {
+                                ongoingCall = false;
+                                mediaPlayer.start();
+                            }
+                        }
+                        break;
+                }
+            }
+        };
+        // Register the listener with the telephony manager
+        // Listen for changes to the device call state.
+        telephonyManager.listen(phoneStateListener,
+                PhoneStateListener.LISTEN_CALL_STATE);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -122,6 +169,7 @@ public class MyServicePayer extends Service   {
                     .setCategory(Notification.CATEGORY_SERVICE)
                     .build();
             startForeground(2, notification);
+            callStateListener();
 
         }
 
@@ -195,9 +243,26 @@ public class MyServicePayer extends Service   {
         mediaPlayer=new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+
+            String error=" Error:";
+            switch (what) {
+                case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+                    error =error+ "MEDIA ERROR NOT VALID FOR PROGRESSIVE PLAYBACK " + extra;
+                    break;
+                case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                    error =error+ "MEDIA ERROR SERVER DIED " + extra;
+                    break;
+                case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    error =error+ "MEDIA ERROR UNKNOWN " + extra;
+                    break;
+                default:{
+                    error=error+" what-"+what+" extra-"+extra;
+                    break;
+                }
+            }
             Intent intent12 = new Intent(Utils.BR_HOST);
             intent12.putExtra("type",102); // error
-            intent12.putExtra("data","Error player: what-"+what+" extra-"+extra);
+            intent12.putExtra("data",error);
             sendBroadcast(intent12);
             return false;
         });

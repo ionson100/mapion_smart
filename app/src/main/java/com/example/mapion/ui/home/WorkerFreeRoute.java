@@ -160,6 +160,7 @@ public class WorkerFreeRoute {
 
         addStartOverlayRoute(mRoute);
         MCurrentRoute.saveRouteAsCurrent(mRoute);
+        refreshRoute();
     }
     private void workerMapCurrentRoute(MRoute mRoute){
 
@@ -172,6 +173,17 @@ public class WorkerFreeRoute {
         }
         addStartOverlayRoute(mRoute);
         //MCurrentRoute.saveRouteAsCurrent(mRoute);
+        refreshRoute();
+    }
+    void refreshRoute(){
+        Intent intent = new Intent(Utils.CONTINUE_ANIMATION);
+        intent.putExtra("type",22); // перегрузка маршрута
+        mActivity.sendBroadcast(intent);
+        Intent intent2 = new Intent(Utils.BR_SERVICE);
+        intent2.putExtra("type",22); // перегрузка маршрута
+        mActivity.sendBroadcast(intent2);
+
+
     }
     void addStartOverlayRoute(MRoute mRoute){
         GeoPoint point=new GeoPoint(mRoute.coordinates.coordinates.get(0).get(1),

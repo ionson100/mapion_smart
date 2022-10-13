@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.mapion.IAction;
 import com.example.mapion.R;
+import com.example.mapion.models.MAnimationStorage;
 import com.example.mapion.models.MCurrentRoute;
 import com.example.mapion.models.MMediaContent;
 import com.example.mapion.models.TotalSettings;
@@ -75,30 +76,7 @@ public class Animation {
         buttonStartStop.setOnClickListener(v -> {
 
             if(currentLine==null){
-                MCurrentRoute.getCurrentRoute(activity, route -> {
-                    this.mRoute=route;
-                });
-                dictionaryPolygon.clear();
-                for (Overlay overlay : mMap.getOverlayManager()) {
-                    if(overlay instanceof Polyline){
-                        currentLine= (Polyline) overlay;
-                    }
-                    if(overlay instanceof Polygon){
-
-                        List<GeoPoint> geoPoints=((Polygon)overlay).getActualPoints();
-                        com.snatik.polygon.Polygon.Builder polygon1=com.snatik.polygon.Polygon.Builder();
-                        for (GeoPoint geoPoint : geoPoints) {
-                            polygon1.addVertex(new com.snatik.polygon.Point(
-                                    geoPoint.getLongitude(),
-                                    geoPoint.getLatitude()));
-                        }
-                       //listPolygon.add(polygon1.build());
-                        dictionaryPolygon.put(((Polygon)overlay),polygon1.build());
-                    }
-                }
-                if(currentLine== null) return;
-                index=1;
-                run();
+                extractedStart(mMap, activity,null);
             }else {
 
                 boolean va=isRun.get();
@@ -117,28 +95,77 @@ public class Animation {
                 if(t==312312){
                     buttonStartStop.callOnClick();// продолжаем анимация
                 }
+                if(t==22){
+                    //index=1;
+                    currentLine=null;// перегрузка маршрута
+
+                    MAnimationStorage storage=MAnimationStorage.getInstance();
+                    if(storage!=null){
+                        extractedStart(mMap,activity,storage);
+                    }
+                    //dictionaryPolygon.clear();
+                    //setRun(false);
+                }
             }
         };
         mActivity.registerReceiver(receiverContinueAnimation,new IntentFilter(Utils.CONTINUE_ANIMATION));
+
     }
-    private void  run(){
+
+    private void extractedStart(MapView mMap, FragmentActivity activity,MAnimationStorage storage) {
+        MCurrentRoute.getCurrentRoute(activity, route -> {
+            this.mRoute=route;
+        });
+        dictionaryPolygon.clear();
+        for (Overlay overlay : mMap.getOverlayManager()) {
+            if(overlay instanceof Polyline){
+                currentLine= (Polyline) overlay;
+            }
+            if(overlay instanceof Polygon){
+
+                List<GeoPoint> geoPoints=((Polygon)overlay).getActualPoints();
+                com.snatik.polygon.Polygon.Builder polygon1=com.snatik.polygon.Polygon.Builder();
+                for (GeoPoint geoPoint : geoPoints) {
+                    polygon1.addVertex(new com.snatik.polygon.Point(
+                            geoPoint.getLongitude(),
+                            geoPoint.getLatitude()));
+                }
+               //listPolygon.add(polygon1.build());
+                dictionaryPolygon.put(((Polygon)overlay),polygon1.build());
+            }
+        }
+        if(currentLine== null) return;
+        if(storage==null){
+            index=1;
+            setRun(true);
+        }else{
+            index= storage.index;
+            setRun(true);
+        }
+
+
+        lastContainsIdPolygon="";
+        run(storage);
+    }
+
+
+    private void  run(MAnimationStorage storage){
        list= currentLine.getActualPoints();
 
-        startMarker.setPosition(list.get(0));
+       if(storage==null){
+           startMarker.setPosition(list.get(0));
+       }else{
+           //GeoPoint(final double aLatitude, final double aLongitude) {
+           startMarker.setPosition(new GeoPoint(storage.markerLatitude,storage.marketLongitude));
+       }
+
         startMarker.setVisible(true);
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         Drawable newMarker = mActivity.getResources().getDrawable(R.drawable.ic_marcer_animation_24);
         startMarker.setIcon(newMarker);
         mMap.getOverlayManager().add(startMarker);
         buttonStartStop.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_pause_24));
-
-
-
         InnerRun();
-
-
-
-
     }
 
     private  void setRun(boolean v){
@@ -152,7 +179,6 @@ public class Animation {
 
     private void  InnerRun(){
         animateMarker(startMarker,index,o -> {
-
             index=o+1;
             InnerRun();
         });
@@ -262,5 +288,15 @@ public class Animation {
     }
     public void destroy() {
         mActivity.unregisterReceiver(receiverContinueAnimation);
+        if(currentLine!=null){
+            MAnimationStorage storage=new MAnimationStorage();
+            storage.index=index;
+            storage.markerLatitude=startMarker.getPosition().getLatitude();
+            storage.marketLongitude=startMarker.getPosition().getLongitude();
+            storage.isRun=isRun.get();
+            MAnimationStorage.save(storage);
+        }else{
+            MAnimationStorage.clearStorage();
+        }
     }
 }
