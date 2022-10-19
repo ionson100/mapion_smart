@@ -140,7 +140,7 @@ public class Animation {
             setRun(true);
         }else{
             index= storage.index;
-            setRun(true);
+            setRun(storage.isRun);
         }
 
 

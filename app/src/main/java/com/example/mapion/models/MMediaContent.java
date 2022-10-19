@@ -7,4 +7,6 @@ public class MMediaContent {
     public String url;
     public String type;
     public long size;
+    public String idRoute;
+    public String idContent;
 }

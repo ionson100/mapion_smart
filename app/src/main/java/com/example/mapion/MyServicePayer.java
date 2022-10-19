@@ -34,6 +34,7 @@ public class MyServicePayer extends Service   {
     private boolean ongoingCall = false;
     private PhoneStateListener phoneStateListener;
     private TelephonyManager telephonyManager;
+    private Downloader mDownloader;
 
 
     private static final String CHANNEL_DEFAULT_IMPORTANCE = "assa123";
@@ -170,6 +171,7 @@ public class MyServicePayer extends Service   {
                     .build();
             startForeground(2, notification);
             callStateListener();
+            mDownloader=new Downloader(getApplicationContext());
 
         }
 
@@ -220,10 +222,19 @@ public class MyServicePayer extends Service   {
         Intent intent = new Intent(Utils.BR_HOST);
         intent.putExtra("type",1); // открыть плейер
         sendBroadcast(intent);
+        /// clearMediaPlayer();
+        if(mediaPlayer!=null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
         createAndStartMedia(mMediaContent);
 
     }
     void createAndStartMedia(MMediaContent mMediaContent){
+        if(mDownloader!=null){
+            mDownloader.DownloadFile(mMediaContent);
+        }
         boolean pr=isAnimation;
         if(mediaPlayer!=null){
             clearMediaPlayer();
@@ -294,6 +305,7 @@ public class MyServicePayer extends Service   {
         });
         mediaPlayer.setLooping(false);
         try {
+
             mediaPlayer.setDataSource(mMediaContent.url);
         } catch (IOException e) {
 
@@ -325,12 +337,12 @@ public class MyServicePayer extends Service   {
             mediaPlayer = null;
             if(isAnimation==false){
                 Intent intent1 = new Intent(Utils.BR_HOST);
-                intent1.putExtra("type",101); // коне воспроизведегтя
+                intent1.putExtra("type",101); // конец воспроизведегтя
                 intent1.putExtra("data",android.R.drawable.ic_media_play);
                 sendBroadcast(intent1);
             }else {
                 Intent intent1 = new Intent(Utils.BR_HOST);
-                intent1.putExtra("type",1011); // коне воспроизведегтя для анимации
+                intent1.putExtra("type",1011); // конец воспроизведегтя для анимации
                 intent1.putExtra("data",android.R.drawable.ic_media_play);
                 sendBroadcast(intent1);
             }
@@ -346,6 +358,9 @@ public class MyServicePayer extends Service   {
         super.onDestroy();
         clearMediaPlayer();
         isStart=false;
+        if(mDownloader!=null){
+            mDownloader.dispose();
+        }
     }
 
     private class TaskSeek extends AsyncTask<Void, Void, Void> {
@@ -354,7 +369,7 @@ public class MyServicePayer extends Service   {
             if(mediaPlayer==null||isCommitPlay==true) return null;
             int currentPosition = mediaPlayer.getCurrentPosition();
             int total = mediaPlayer.getDuration();
-            while ( mediaPlayer.isPlaying() && currentPosition < total) {
+            while ( mediaPlayer!=null && mediaPlayer.isPlaying() && currentPosition < total) {
                 try {
                     Thread.sleep(500);
                     currentPosition = mediaPlayer.getCurrentPosition();

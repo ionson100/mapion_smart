@@ -13,5 +13,7 @@ public class ModelCollection {
         classes.add(MCurrentRoute.class);
         classes.add(MMenuRouteStorage.class);
         classes.add(MAnimationStorage.class);
+        classes.add(MDownloadFileData.class);
+        classes.add(MContentFile.class);
     }
 }

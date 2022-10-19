@@ -21,6 +21,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.mapion.R;
 import com.example.mapion.dialogs.DialogFactory;
+import com.example.mapion.models.MAnimationStorage;
 import com.example.mapion.models.MCurrentRoute;
 import com.example.mapion.models.MMediaContent;
 import com.example.mapion.models.MMenuRouteStorage;
@@ -160,7 +161,8 @@ public class WorkerFreeRoute {
 
         addStartOverlayRoute(mRoute);
         MCurrentRoute.saveRouteAsCurrent(mRoute);
-        refreshRoute();
+        NewRoute();
+        //refreshRoute();
     }
     private void workerMapCurrentRoute(MRoute mRoute){
 
@@ -182,8 +184,13 @@ public class WorkerFreeRoute {
         Intent intent2 = new Intent(Utils.BR_SERVICE);
         intent2.putExtra("type",22); // перегрузка маршрута
         mActivity.sendBroadcast(intent2);
+    }
 
-
+    void NewRoute(){
+        MAnimationStorage.clearStorage(); // очистка кеша проигрывателя
+        Intent intent2 = new Intent(Utils.BR_SERVICE);
+        intent2.putExtra("type",22); // перегрузка маршрута
+        mActivity.sendBroadcast(intent2);
     }
     void addStartOverlayRoute(MRoute mRoute){
         GeoPoint point=new GeoPoint(mRoute.coordinates.coordinates.get(0).get(1),
@@ -262,9 +269,11 @@ public class WorkerFreeRoute {
         }
         String fileName=mContentCore.id+".mp3";
         mMediaContent.fileName =fileName;
+        mMediaContent.idContent=String.valueOf(mContentCore.id);
         mMediaContent.message=mPolygon.getName(mActivity);
         mMediaContent.type=mContentCore.contentType;
         mMediaContent.size=mContentCore.contentSize;
+        mMediaContent.idRoute=String.valueOf(mContentCore.idRoute);
         mMediaContent.url=totalSettings.url+"/HubApi/GetFileStream?id="+mContentCore.id;
 
 
